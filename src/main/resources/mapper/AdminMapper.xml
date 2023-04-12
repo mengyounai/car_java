@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gasaiyuno.car.mapper.AdminMapper">
+
+    <select id="countAll" resultType="int">
+        select count(*) from admin;
+    </select>
+
+    <select id="queryAdminById" parameterType="int" resultType="com.gasaiyuno.car.po.Admin">
+        select * from t_admin where admin_id = #{id};
+    </select>
+
+    <select id="queryAdminByName" parameterType="string" resultType="com.gasaiyuno.car.po.Admin">
+        select * from t_admin where adminName = #{adminName};
+    </select>
+
+    <select id="queryAdmin" parameterType="map" resultType="com.gasaiyuno.car.po.Admin">
+        select * from t_admin
+        <where>
+            <if test="info != null">
+                admin_id like concat('%',#{info},'%') or admin_name like concat('%',#{info},'%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="addAdmin" parameterType="com.gasaiyuno.car.po.Admin">
+        insert into t_admin (adminName,adminPwd,adminPermission) values (#{adminName},#{adminPwd},#{adminPermission});
+    </insert>
+
+    <update id="updateAdmin" parameterType="com.gasaiyuno.car.po.Admin">
+        update t_admin set adminName=#{adminName} , adminPwd=#{adminPwd} , adminPermission=#{adminPermission} where adminId=#{adminId};
+    </update>
+
+    <delete id="deleteAdmin" parameterType="int">
+        delete from t_admin where adminId=#{adminId};
+    </delete>
+</mapper>

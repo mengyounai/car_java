@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head th:replace="admin/_fragments :: head(~{::title})">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>博客管理登录</title>
+    <link rel="stylesheet" href="/css/semantic.min.css" th:href="@{/css/semantic.min.css}">
+  <link rel="stylesheet" href="/css/me.css">
+</head>
+<body>
+
+<br>
+<br>
+<br>
+
+ <div class="m-container-small m-padded-tb-massive" style="max-width: 30em !important;">
+   <div class="ur container">
+     <div class="ui middle aligned center aligned grid">
+       <div class="column">
+         <h2 class="ui teal image header">
+           <div class="content">
+             管理后台登录
+           </div>
+         </h2>
+         <form id="form" class="ui large form" method="get" action="#" th:action="@{/admin/login}">
+           <div class="ui  segment">
+             <div class="field">
+               <div class="ui left icon input">
+                 <i class="user icon"></i>
+                 <input type="text" name="username" placeholder="用户名">
+               </div>
+             </div>
+             <div class="field">
+               <div class="ui left icon input">
+                 <i class="lock icon"></i>
+                 <input type="password" name="password" placeholder="密码">
+               </div>
+             </div>
+             <button onclick="login();" class="ui fluid large teal submit button">登   录</button>
+           </div>
+
+           <div class="ui error mini message"></div>
+           <div class="ui mini negative message" th:unless="${#strings.isEmpty(message)}" th:text="${message}">用户名和密码错误</div>
+            <!--二维码-->
+
+<!--           <div class="qrCodeImg-box" id="qrImgDiv"></div>-->
+         </form>
+
+       </div>
+     </div>
+   </div>
+ </div>
+<!--/*/<th:block th:replace="admin/_fragments :: script">/*/-->
+<script src="/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script src="/js/semantic.min.js" th:src="@{/js/semantic.min.js}"></script>
+<!--/*/</th:block>/*/-->
+
+<script>
+  $('.ui.form').form({
+    fields : {
+      username : {
+        identifier: 'username',
+        rules: [{
+          type : 'empty',
+          prompt: '请输入用户名'
+        }]
+      },
+      password : {
+        identifier: 'password',
+        rules: [{
+          type : 'empty',
+          prompt: '请输入密码'
+        }]
+      }
+    }
+  });
+  //二维码生成
+  $(document).ready(function(){
+    initQrImg();
+  });
+
+
+  function initQrImg(){
+    $("#qrImgDiv").empty();
+
+    var xmlhttp;
+    xmlhttp=new XMLHttpRequest();
+    xmlhttp.open("GET",getQrPath,true);
+    xmlhttp.responseType = "blob";
+    xmlhttp.onload = function(){
+      uuid = this.getResponseHeader("uuid");
+
+      if (this.status == 200) {
+        var blob = this.response;
+        var img = document.createElement("img");
+        img.className = 'qrCodeBox-img';
+        img.onload = function(e) {
+          window.URL.revokeObjectURL(img.src);
+        };
+        img.src = window.URL.createObjectURL(blob);
+        document.getElementById("qrImgDiv").appendChild(img);
+
+        initWebSocket();
+      }
+    }
+    xmlhttp.send();
+  }
+
+  function login(){
+    console.log(1)
+    document.getElementById("form").submit();
+     success = function (res) {
+      console.log(res);
+      // 本地存入token
+      localStorage.setItem('accessToken',res['accessToken']);
+    }
+  }
+
+
+  var path = "://localhost:8083";
+  var getQrPath =  "http" + path + "/admin/getLoginQr";
+  var wsPath =     "ws" + path + "/websocket/";
+
+
+  function initWebSocket(){
+
+    if(typeof(WebSocket) == "undefined") {
+      console.log("您的浏览器不支持WebSocket");
+    }else{
+      console.log("您的浏览器支持WebSocket");
+      //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
+      var wsPathStr = wsPath+uuid;
+      console.log(wsPathStr);
+      socket = new WebSocket(wsPathStr);
+      //打开事件
+      socket.onopen = function() {
+        console.log("Socket 已打开");
+        //socket.send("这是来自客户端的消息" + location.href + new Date());
+      };
+      //获得消息事件
+      socket.onmessage = function(msg) {
+        console.log(msg);
+        var data = JSON.parse(msg.data);
+        console.log(data)
+        if(data!=null){
+
+          var url = "admin/loginNoCheck?token=" + uuid
+          window.location.href = url
+        }else{
+          //如果过期了，关闭连接、重置连接、刷新二维码
+          socket.close();
+          initQrImg();
+        }
+        //发现消息进入    开始处理前端触发逻辑
+      };
+      //关闭事件
+      socket.onclose = function() {
+        console.log("Socket已关闭");
+      };
+      //发生了错误事件
+      socket.onerror = function() {
+        alert("Socket发生了错误");
+        //此时可以尝试刷新页面
+      }
+    }
+
+  }
+
+</script>
+
+</body>
+</html>
