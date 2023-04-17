@@ -5,23 +5,27 @@ import com.gasaiyuno.car.dao.UserRepository;
 import com.gasaiyuno.car.dto.BaseUserInfo;
 import com.gasaiyuno.car.dto.user.UserDTO;
 import com.gasaiyuno.car.exception.ServiceException;
+import com.gasaiyuno.car.mapper.UserMapper;
+import com.gasaiyuno.car.po.Swiper;
 import com.gasaiyuno.car.po.User;
 import com.gasaiyuno.car.service.UserService;
 import com.gasaiyuno.car.util.*;
 import com.gasaiyuno.car.vo.user.LoginVo;
 import com.gasaiyuno.car.vo.user.UserCreateVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserMapper userMapper;
 
 
     @Override
@@ -96,6 +100,44 @@ public class UserServiceImpl implements UserService {
         UserDTO userDTO = new UserDTO();
         userDTO.setUser(user);
         return userDTO;
+    }
+
+    @Override
+    public int countUser() {
+        int size = userRepository.findAll().size();
+        return size;
+    }
+
+    @Override
+    public List<User> userList() {
+        List<User> all = userRepository.findAll();
+        return all;
+    }
+
+    @Override
+    public User findById(Long id) {
+        User byId = userRepository.findById(id).get();
+        return byId;
+    }
+
+    @Override
+    public int updateUser(User user) {
+
+        if (EmptyUtil.isEmpty(user.getId())){
+            int insert = userMapper.insert(user);
+            return insert;
+        }
+
+        User s = userMapper.selectById(user.getId());
+
+        BeanUtils.copyProperties(user, s, MyBeanUtils.getNullPropertyNames(user));
+        s.setUpdateTime(new Date());
+//        Swiper save = swiperRepository.save(s);
+
+        int update = userMapper.updateById(s);
+
+        return update;
+
     }
 
 

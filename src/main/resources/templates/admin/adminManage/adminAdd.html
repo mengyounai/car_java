@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>新增管理员</title>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <script charset="utf-8" th:src="@{/lib/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form" id="form">
+            <div class="layui-form-item">
+                <label for="adminName" class="layui-form-label">账户</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="adminName" name="adminName" maxlength="15" required  autocomplete="off" class="layui-input" lay-verify="empty" >
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="adminPwd" class="layui-form-label">密码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="adminPwd" name="adminPwd" maxlength="20" required="" autocomplete="off" class="layui-input" lay-verify="empty">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="adminPwd" class="layui-form-label">权限</label>
+                <div class="layui-input-inline">
+                    <label>
+                        <select id="adminPermission" name="adminPermission">
+                            <option value="super" selected>超级管理员</option>
+                            <option value="general">普通管理员</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="adminPwd" class="layui-form-label"></label>
+                <button class="layui-btn" lay-filter="add" lay-submit="">增加</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'layer'],
+        function() {
+            $ = layui.jquery;
+            var form = layui.form,
+                layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({
+                empty: function(value) {
+                    if (value.length === 0) {
+                        return '该栏不能为空';
+                    }
+                }
+            });
+
+            //监听提交
+            form.on('submit(add)',
+                function() {
+                    $.post({
+                        url:"/admin/addAdmin",
+                        data:{"adminName":$('#adminName').val(),"adminPwd":$('#adminPwd').val(),
+                            "adminPermission":$('#adminPermission').val()},
+                        success:function (result) {
+                            if(result === 1){
+                                layer.msg('增加成功!',{icon:6,time:3000});
+                                document.getElementById("form").reset()
+                            }else{
+                                layer.msg('增加失败!账户已存在!',{icon:5,time:3000});
+                            }
+                        }
+                    })
+                    return false;
+                });
+        }
+    )
+</script>
+</body>
+</html>

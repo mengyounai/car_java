@@ -1,8 +1,14 @@
 package com.gasaiyuno.car.util;
+import com.UpYun;
+import com.gasaiyuno.car.config.UpYunConfig;
 import com.upyun.FormUploader;
 import com.upyun.Params;
 import com.upyun.Result;
+import com.upyun.UpException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
@@ -18,6 +24,10 @@ import java.util.Map;
  * @Description:又拍云文件上传工具类
  */
 public class UpYunUtils {
+
+    @Autowired
+    private UpYunConfig upYunConfig;
+
     public static Result testSync(byte[] datas, String filename) throws NoSuchAlgorithmException, SignatureException, InvalidKeyException {
         //初始化uploader
         FormUploader uploader = new FormUploader("云储存服务名称", "操作员名称", "操作员密码");
@@ -38,4 +48,6 @@ public class UpYunUtils {
         System.out.println(result);
         return result;
     }
+
+
 }

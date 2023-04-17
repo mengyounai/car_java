@@ -1,9 +1,6 @@
 package com.gasaiyuno.car.po;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,6 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "t_user")
+@TableName("t_user")
 @Data
 public class User {
 

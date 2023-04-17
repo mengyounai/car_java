@@ -12,6 +12,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "t_goodsType")
+@TableName("t_goods_type")
 @Data
 public class GoodsType {
 

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑轮播图</title>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <script charset="utf-8" th:src="@{/lib/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <!--        <form class="layui-form">-->
+        <form class="layui-form" id="blog-form" action="#" th:object="${swiper}" th:action="@{/admin/updateSwiper}"
+              enctype="multipart/form-data" method="post">
+
+            <input type="hidden" name="id" id="id" th:value="*{id}">
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label">名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="name" name="name" maxlength="10" required autocomplete="off"
+                           class="layui-input" lay-verify="empty" th:value="*{name}">
+                </div>
+            </div>
+            <div class="required field">
+                <div class="ui left labeled input">
+                    <label class="ui teal basic label">首图</label>
+                    <!--            <input type="text" name="firstPicture" th:value="*{firstPicture}" placeholder="首图引用地址">-->
+                    <input type="file" name="file00" accept="image/*" placeholder="首图引用地址">
+                </div>
+            </div>
+            <div class="required field">
+                <img id="url" th:src="*{url}" style="width: 1000px">
+            </div>
+            <div class="layui-form-item">
+                <label for="name" class="layui-form-label"></label>
+                <!--                <button class="layui-btn" lay-filter="update" lay-submit="">更新</button>-->
+                <button class="layui-btn"  type="submit" id="publish-btn">新增</button>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    $('#publish-btn').click(function () {
+        $('[name="published"]').val(true);
+        $('#blog-form').submit();
+    });
+
+    layui.use(['form', 'layer'],
+        function () {
+            $ = layui.jquery;
+            var form = layui.form,
+                layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({
+                empty: function (value) {
+                    if (value.length === 0) {
+                        return '该栏不能为空';
+                    }
+                }
+            });
+
+            //监听提交
+            form.on('submit(update)',
+                function () {
+                    $.post({
+                        url: "/admin/updateSwiper",
+                        data: {
+                            "id": $('#swiperId').val(),
+                            "name": $('#name').val(),
+                            "adminPwd": $('#adminPwd').val(),
+                            "adminPermission": $('#adminPermission').val()
+                        },
+                        success: function (result) {
+                            if (result === 1) {
+                                layer.alert("更新成功", {icon: 6},
+                                    function () {
+                                        // 获得frame索引
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        //刷新父页面
+                                        xadmin.father_reload();
+                                        //关闭当前frame
+                                        parent.layer.close(index);
+                                    })
+                            } else {
+                                layer.alert("更新失败,账户已存在!", {icon: 5},
+                                    function () {
+                                        // 获得frame索引
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        //关闭当前frame
+                                        parent.layer.close(index);
+                                    })
+                            }
+                        }
+                    })
+                    return false;
+                });
+        }
+    )
+</script>
+
+</body>
+</html>

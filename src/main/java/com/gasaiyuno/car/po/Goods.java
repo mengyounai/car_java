@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /*
@@ -11,12 +12,16 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "t_goods")
+@TableName("t_goods")
 @Data
-public class Goods {
+public class Goods implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
 
     @Id
     @GeneratedValue
-    @TableId(value = "id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id; // 商品ID
     private Long goodsId; // 商品种类ID
     private String GoodsName; // 商品名称

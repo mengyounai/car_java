@@ -1,7 +1,9 @@
 package com.gasaiyuno.car.mapper;
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.gasaiyuno.car.po.Admin;
+import com.gasaiyuno.car.po.Goods;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -9,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-@Repository
-public interface AdminMapper {
+public interface AdminMapper  extends BaseMapper<Admin> {
 
     //返回总记录数
     int countAll();

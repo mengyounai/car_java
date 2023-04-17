@@ -1,9 +1,6 @@
 package com.gasaiyuno.car.po;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,6 +11,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "t_orderRecord")
+@TableName("t_orderRecord")
 @Data
 public class OrderRecord {
 

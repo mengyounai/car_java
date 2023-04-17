@@ -4,32 +4,51 @@
 
     <resultMap id="BaseResultMap" type="com.gasaiyuno.car.dto.goods.GoodsPageDTO">
         <id property="id" column="id" jdbcType="INTEGER"/>
-<!--        <result property="goodsId" column="goods_id" jdbcType="INTEGER"/>-->
-<!--        <result property="description" column="description" jdbcType="VARCHAR"/>-->
-<!--        <result property="content" column="content" jdbcType="VARCHAR"/>-->
-<!--        <result property="price" column="price" jdbcType="DOUBLE"/>-->
-<!--        <result property="minPrice" column="min_price" jdbcType="DOUBLE"/>-->
-<!--        <result property="stock" column="stock" jdbcType="INTEGER"/>-->
-<!--        <result property="brand" column="brand" jdbcType="VARCHAR"/>-->
-<!--        <result property="model" column="model" jdbcType="VARCHAR"/>-->
-<!--        <result property="categoryId" column="category_id" jdbcType="INTEGER"/>-->
-<!--        <result property="imageUrl" column="image_url" jdbcType="VARCHAR"/>-->
-<!--        <result property="isPublish" column="is_publish" jdbcType="INTEGER"/>-->
-<!--        <result property="isLimit" column="is_limit" jdbcType="INTEGER"/>-->
-<!--        <result property="isRecommend" column="template_code" jdbcType="INTEGER"/>-->
-<!--        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>-->
-<!--        <result property="numberSells" column="numberSells" jdbcType="INTEGER"/>-->
+        <!--        <result property="goodsId" column="goods_id" jdbcType="INTEGER"/>-->
+        <!--        <result property="description" column="description" jdbcType="VARCHAR"/>-->
+        <!--        <result property="content" column="content" jdbcType="VARCHAR"/>-->
+        <!--        <result property="price" column="price" jdbcType="DOUBLE"/>-->
+        <!--        <result property="minPrice" column="min_price" jdbcType="DOUBLE"/>-->
+        <!--        <result property="stock" column="stock" jdbcType="INTEGER"/>-->
+        <!--        <result property="brand" column="brand" jdbcType="VARCHAR"/>-->
+        <!--        <result property="model" column="model" jdbcType="VARCHAR"/>-->
+        <!--        <result property="categoryId" column="category_id" jdbcType="INTEGER"/>-->
+        <!--        <result property="imageUrl" column="image_url" jdbcType="VARCHAR"/>-->
+        <!--        <result property="isPublish" column="is_publish" jdbcType="INTEGER"/>-->
+        <!--        <result property="isLimit" column="is_limit" jdbcType="INTEGER"/>-->
+        <!--        <result property="isRecommend" column="template_code" jdbcType="INTEGER"/>-->
+        <!--        <result property="isDelete" column="is_delete" jdbcType="TINYINT"/>-->
+        <!--        <result property="numberSells" column="numberSells" jdbcType="INTEGER"/>-->
         <association property="numberSells" column="goods_id" javaType="com.gasaiyuno.car.dto.goods.GoodsPageDTO"
                      select="com.gasaiyuno.car.mapper.OrderRecordMapper.countByGoodId"/>
     </resultMap>
     <select id="findDTO" resultMap="BaseResultMap">
-        SELECT * FROM t_goods ${ew.customSqlSegment}
+        SELECT *
+        FROM t_goods ${ew.customSqlSegment}
     </select>
 
     <select id="goods" resultType="com.gasaiyuno.car.po.Goods">
-        select * from t_goods
+        select *
+        from t_goods
         where goods_id = #{GoodId,jdbcType=NUMERIC}
-        and is_delete = 0
+          and is_delete = 0
+    </select>
+    <select id="queryGoods" parameterType="map" resultType="com.gasaiyuno.car.po.Goods">
+        select * from t_goods
+        <where>
+            <if test="goods_name != null">
+                goods_name like concat('%',#{goods_name},'%')
+            </if>
+            <if test="category_id != null">
+                and category_id = #{category_id}
+            </if>
+
+            and is_delete = 0
+
+        </where>
+        <if test="start != null">
+            limit #{start},#{num}
+        </if>
     </select>
 
 

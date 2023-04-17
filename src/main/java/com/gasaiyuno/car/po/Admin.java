@@ -1,11 +1,14 @@
 package com.gasaiyuno.car.po;
 
 
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "t_admin")
+@TableName("t_admin")
 public class Admin {
 
     //管理员工号

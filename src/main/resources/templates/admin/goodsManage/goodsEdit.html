@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑疾病</title>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <script charset="utf-8" th:src="@{/lib/layui/layui.js}"></script>
+    <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+</head>
+<body>
+
+
+<div class="layui-fluid">
+    <div class="layui-row">
+        <form class="layui-form" id="blog-form" action="#" th:object="${goods}" th:action="@{/admin/updateGoods}"
+              enctype="multipart/form-data" method="post">
+            <input type="hidden" th:value="${goods.getId()}" name="id" id="id">
+            <!-- 疾病名称 -->
+            <div class="layui-form-item">
+                <label for="goodsName" class="layui-form-label">商品名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="goodsName" name="goodsName" maxlength="15" required autocomplete="off"
+                           class="layui-input" lay-verify="empty" th:value="${goods.getGoodsName()}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="goodsType" class="layui-form-label">商品类别</label>
+                <div class="layui-input-inline">
+                    <label>
+                        <select id="goodsType" name="goodsType"  required lay-verify="required">
+                            <option th:value="null" selected>请选择</option>
+                            <option th:each="goodType:${goodsTypeList}" th:value="${goodType}" th:text="${goodType}"
+                                    th:selected="${goodType eq typeName}"></option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="price" class="layui-form-label">商品原价</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="price" name="price" maxlength="15" required autocomplete="off"
+                           class="layui-input" lay-verify="empty" th:value="${goods.getPrice()}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="minPrice" class="layui-form-label">商品现价</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="minPrice" name="minPrice" maxlength="15" required autocomplete="off"
+                           class="layui-input" lay-verify="empty" th:value="${goods.getMinPrice()}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="stock" class="layui-form-label">商品库存</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="stock" name="stock" maxlength="15" required autocomplete="off"
+                           class="layui-input" lay-verify="empty" th:value="${goods.getStock()}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label for="description" class="layui-form-label">商品描述</label>
+                <div class="layui-input-inline">
+                    <textarea type="text" id="description" name="description" maxlength="200" required
+                              autocomplete="off" class="layui-textarea" lay-verify="empty"
+                              style="width: 400px;height: 100px;max-height: 100px"
+                              th:text="${goods.getDescription()}"></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label for="isPublish" class="layui-form-label">是否上架</label>
+                <div class="layui-input-inline">
+                    <label>
+                        <select id="isPublish" name="isPublish" lay-verify="empty">
+                            <option th:selected="${{goods.isPublish}} eq 1" value="1">上架</option>
+                            <option th:selected="${{goods.isPublish}} eq 0" value="0">下架</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+            <div class="required field">
+                <div class="ui left labeled input">
+                    <label for="file" class="layui-form-label">展示图</label>
+                    <input type="file" id="file" name="file00" accept="image/*" placeholder="首图引用地址">
+                </div>
+            </div>
+            <div class="required field">
+                <img id="url" th:src="*{imageUrl}" style="width: 200px">
+            </div>
+
+
+            <br>
+            <br>
+            <br>
+            <div class="required field">
+                <div class="ui left labeled input">
+                    <label for="files" class="layui-form-label">详情展示图</label>
+                    <input type="file" id="files" multiple name="files" accept="image/*" placeholder="首图引用地址">
+                </div>
+            </div>
+            <div class="required field" th:each="imgUrl:${imgList}">
+                <img id="url2" th:src="${imgUrl}" style="width: 200px">
+            </div>
+
+            <div class="layui-form-item">
+                <!--                <label for="diseaseCure" class="layui-form-label"></label>-->
+                <!--                <button class="layui-btn" lay-filter="update" lay-submit="">更新</button>-->
+                <button class="layui-btn" type="submit" id="publish-btn">更新</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+
+
+
+    layui.use(['form', 'layer'],
+        function () {
+            $ = layui.jquery;
+            var form = layui.form,
+                layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({
+                empty: function (value) {
+                    if (value.length === 0) {
+                        return '该栏不能为空';
+                    }
+                }
+            });
+
+            //监听提交
+            form.on('submit(update)',
+                function () {
+                    $.post({
+                        url: "/admin/updateGoods",
+                        data: {
+                            "id": $('#id').val(),
+                            "goodsName": $('#goodsName').val(),
+                            "goodType": $('#goodType').val(),
+                            "description": $('#description').val(),
+                            "price": $('#price').val(),
+                            "minPrice": $('#minPrice').val(),
+                            "isPublish": $('#isPublish').val(),
+                            "stock": $('#stock').val(),
+                            "file00": $('#file').val(),
+                            "files": $('#files').val(),
+                            // "diseaseCure":$('#diseaseCure').val()
+                        },
+                        success: function (result) {
+                            if (result === 1) {
+                                layer.alert("更新成功", {icon: 6},
+                                    function () {
+                                        // 获得frame索引
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        //刷新父页面
+                                        xadmin.father_reload();
+                                        //关闭当前frame
+                                        parent.layer.close(index);
+                                    })
+                            } else {
+                                layer.alert("更新失败!商品名称已存在", {icon: 5},
+                                    function () {
+                                        // 获得frame索引
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        //关闭当前frame
+                                        parent.layer.close(index);
+                                    })
+                            }
+                        }
+                    })
+                    return false;
+                });
+        }
+    )
+
+    $('#publish-btn').click(function () {
+        $('[name="published"]').val(true);
+        $('#blog-form').submit();
+    });
+</script>
+
+</body>
+</html>

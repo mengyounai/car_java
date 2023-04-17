@@ -7,6 +7,8 @@ import com.gasaiyuno.car.po.User;
 import com.gasaiyuno.car.vo.user.LoginVo;
 import com.gasaiyuno.car.vo.user.UserCreateVo;
 
+import java.util.List;
+
 public interface UserService {
 
     User checkUser(String username, String password);
@@ -18,5 +20,13 @@ public interface UserService {
     User addUser(UserCreateVo createVo);
 
     UserDTO userInfo(BaseUserInfo baseUserInfo);
+
+    int countUser();
+
+    List<User> userList();
+
+    User findById(Long id);
+
+    int updateUser(User user);
 
 }

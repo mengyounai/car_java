@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<!--    <meta charset="UTF-8">-->
+    <title>疾病列表</title>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <script charset="utf-8" th:src="@{/lib/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+<!--    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>-->
+
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <!-- 查找 -->
+                <div class="layui-card-body ">
+                    <form class="layui-form layui-col-space5" th:action="@{/admin/goodsList}" method="post">
+                        <div class="layui-inline layui-show-xs-block">
+                            <label>
+                                <select name="goodsType" lay-verify="empty" >
+                                    <option th:value="null" selected>请选择</option>
+                                    <option th:each="goodsType:${goodsTypeList}" th:value="${goodsType}" th:text="${goodsType}"></option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <label>
+                                <input type="text" name="goodsName"  placeholder="请输入商品名" autocomplete="off" class="layui-input">
+                            </label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+                        </div>
+                    </form>
+                </div>
+                <!-- 疾病列表 -->
+                <div class="layui-card-body layui-table-body layui-table-main">
+                    <table class="layui-table layui-form">
+                        <thead>
+                        <tr>
+<!--                            <th style="text-align:  center;">商品ID</th>-->
+                            <th style="width: 70px;height: 20px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;text-align: center" >商品名称</th>
+                            <th style="text-align:  center;">商品原价</th>
+                            <th style="text-align:  center;">商品售价</th>
+                            <th style="text-align:  center;">商品库存</th>
+                            <th style="text-align:  center;">商品展示图</th>
+                            <th style="text-align:  center;">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr style="height: 30px;overflow: hidden"  th:each="goods:${goodsList}">
+<!--                            <td th:text="${goods.getId()}"></td>-->
+                            <td style="text-align:center;width: 70px;height: 20px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden" th:text="${goods.getGoodsName()}"></td>
+                            <td style="text-align:center;width: 50px" th:text="${goods.getPrice()}"></td>
+                            <td style="text-align: center" th:text="${goods.getMinPrice()}"></td>
+                            <td style="text-align: center" th:text="${goods.getStock()}"></td>
+                            <td>
+                                <img th:src="*{goods.getImageUrl()}">
+                            </td>
+                            <td style="max-width: 400px">
+                                <button class="layui-btn" th:onclick="'javascript:disease_edit('+${goods.getId()}+')'">
+                                    <i class="layui-icon">&#xe621;</i>查看详情
+                                </button>
+                                <button class="layui-btn layui-btn-danger" th:onclick="'javascript:disease_delete(this,'+${goods.getId()}+')'">
+                                    <i class="layui-icon">&#xe640;</i>删除
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 页数 -->
+                <div class="layui-card-body ">
+                    <div class="page" th:if="${page ne 0}">
+                        <!--  向前  -->
+                        <th:block th:if="${currentPage} ne 1">
+                            <a class="prev"  th:href="@{'/admin/goodsList?currentPage='+${currentPage -1}}">&lt;&lt;</a>
+                        </th:block>
+                        <!--  中间  -->
+                        <th:block th:each="i:${#numbers.sequence(1,page)}">
+                            <!--  其它页  -->
+                            <a th:if="${i} ne ${currentPage}" th:text="${i}" th:href="@{'/admin/goodsList?currentPage='+${i}}" ></a>
+                            <!--  当前页  -->
+                            <span class="current" th:if="${i} eq ${currentPage}" th:text="${i}"></span>
+                        </th:block>
+                        <!--  向后  -->
+                        <th:block th:if="${currentPage} ne ${page}">
+                            <a class="prev"  th:href="@{'/admin/goodsList?currentPage='+${currentPage+1}}">&gt;&gt;</a>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'layer'],
+        function() {
+            $ = layui.jquery;
+            var form = layui.form,
+                layer = layui.layer;
+        })
+
+    //编辑流感
+    function disease_edit(diseaseId) {
+        //开启一个小窗口
+        xadmin.open('商品详情','/admin/toGoodsEdit/'+diseaseId,600,650)
+    }
+    //删除流感
+    function disease_delete(obj,goodsId){
+        layer.confirm('确认要删除吗？',function(){
+            //发异步删除数据
+            $.post({
+                url:"/admin/deleteGoods",
+                data:{"goodsId":goodsId}
+            })
+            $(obj).parents("tr").remove();
+            layer.msg('已删除!',{icon:1,time:1000});
+        });
+    }
+</script>
+
+
+</body>
+</html>

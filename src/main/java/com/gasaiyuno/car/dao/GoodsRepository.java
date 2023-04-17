@@ -4,6 +4,7 @@ package com.gasaiyuno.car.dao;
 
 import com.gasaiyuno.car.dto.goods.GoodsPageDTO;
 import com.gasaiyuno.car.po.Goods;
+import com.gasaiyuno.car.util.EnumStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,6 +30,8 @@ public interface GoodsRepository extends JpaRepositoryImplementation<Goods, Long
 
     List<Goods> findByGoodsId(Long goodsId);
 
+    List<Goods> findByIsDelete(int IsDelete);
+
 //    @Query(value = "select  new com.pojo.SentenceObject(list,list2) " +
 //            " from tbl_basic_sentence list,tbl_knowledge_point list2 " +
 //            " where  list.bid = :b_id and list.kid=list2.kid",nativeQuery = true)
@@ -48,4 +51,6 @@ public interface GoodsRepository extends JpaRepositoryImplementation<Goods, Long
             "WHERE g.isDelete = 0 AND o.status = 1 " +
             "GROUP BY g.id")
     Page<GoodsPageDTO> findGoodsWithSales2(Pageable pageable);
+
+
 }

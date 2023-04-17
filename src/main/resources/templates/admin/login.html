@@ -85,7 +85,6 @@
 
     var xmlhttp;
     xmlhttp=new XMLHttpRequest();
-    xmlhttp.open("GET",getQrPath,true);
     xmlhttp.responseType = "blob";
     xmlhttp.onload = function(){
       uuid = this.getResponseHeader("uuid");
@@ -117,9 +116,6 @@
   }
 
 
-  var path = "://localhost:8083";
-  var getQrPath =  "http" + path + "/admin/getLoginQr";
-  var wsPath =     "ws" + path + "/websocket/";
 
 
   function initWebSocket(){

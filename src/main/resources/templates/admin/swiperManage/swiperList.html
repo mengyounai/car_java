@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员列表</title>
+    <link rel="stylesheet" th:href="@{/css/font.css}">
+    <link rel="stylesheet" th:href="@{/css/xadmin.css}">
+    <script charset="utf-8" th:src="@{/lib/layui/layui.js}" ></script>
+    <script type="text/javascript" th:src="@{/js/xadmin.js}"></script>
+</head>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <!-- 查找 -->
+                <div class="layui-card-body ">
+                    <form class="layui-form layui-col-space5" th:action="@{/admin/swiperList}" method="post">
+                        <div class="layui-inline layui-show-xs-block">
+                            <label>
+                                <input type="text" name="adminInfo"  placeholder="请输入管理员信息" autocomplete="off" class="layui-input">
+                            </label>
+                        </div>
+                        <div class="layui-inline layui-show-xs-block">
+                            <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+                        </div>
+                    </form>
+                </div>
+                <!-- 列表 -->
+                <div class="layui-card-body layui-table-body layui-table-main">
+                    <table class="layui-table layui-form">
+                        <thead>
+                        <tr>
+                            <th style="text-align:  center;">ID</th>
+                            <th style="text-align:  center;">名称</th>
+                            <th style="text-align:  center;">图片</th>
+                            <th style="text-align:  center;">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="swiper:${swiperList}">
+
+                            <td th:text="${swiper.getId()}"></td>
+                            <td th:text="${swiper.getName()}"></td>
+                            <td>
+                                <img th:src="*{swiper.getUrl()}">
+                            </td>
+                            <td class="td-manage">
+                                <button class="layui-btn layui-btn-normal" th:onclick="'javascript:admin_edit('+${swiper.getId()}+')'">
+                                    <i class="layui-icon">&#xe642;</i>编辑
+                                </button>
+                                <button class="layui-btn layui-btn-danger" th:onclick="'javascript:admin_delete(this,'+${swiper.getId()}+')'">
+                                    <i class="layui-icon">&#xe640;</i>删除
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    //编辑管理员
+    function admin_edit(swiperId) {
+        //开启一个小窗口
+        xadmin.open('编辑轮播图','/admin/swiperEdit/'+swiperId,900,600)
+    }
+    //删除管理员
+    function admin_delete(obj,swiperId){
+        layer.confirm('确认要删除吗？',function(){
+            //发异步删除数据
+            $.post({
+                url:"/admin/deleteSwiper",
+                data:{"swiperId":swiperId}
+            })
+            $(obj).parents("tr").remove();
+            layer.msg('已删除!',{icon:1,time:1000});
+        });
+    }
+</script>
+
+</body>
+</html>
